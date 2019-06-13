@@ -1,6 +1,18 @@
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 const port = process.env.PORT || 3000;
+
+const users = [{
+        id: 1,
+        name: 'Adam'
+    },
+    {
+        id: 2,
+        name: 'Ewa'
+    }
+]
 
 http.createServer((req, res) => {
     res.writeHead(200, {
@@ -8,13 +20,24 @@ http.createServer((req, res) => {
     })
     switch (req.url) {
         case '/':
-            res.end('<h1>Strona glowna</h1>');
+            fs.readFile(path.join(__dirname, 'index.html'), (err, page) => {
+                if (err) res.end('<h1>Nie udalo sie pobrac pliku</h1>');
+                else res.end(page);
+            })
             break;
         case '/users':
-            res.end('<h1>Strona uzytkownikow</h1>');
+            fs.readFile(path.join(__dirname, 'users.html'), (err, page) => {
+                if (err) res.end('<h1>Nie udalo sie pobrac pliku</h1>');
+                else res.end(page);
+            })
             break;
         case '/api/users':
-            res.end('<h1>API</h1>');
+            res.writeHead(200, {
+                'Content-Type': 'application/json; charset=utf-8'
+            })
+            const usersJSON = JSON.stringify(users);
+
+            res.end(usersJSON);
             break;
         default:
             res.end('<h1>Strona nie istnieje</h1>')
